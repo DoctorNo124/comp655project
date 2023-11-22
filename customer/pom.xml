@@ -70,6 +70,10 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.eclipse.microprofile.openapi</groupId>
+          <artifactId>microprofile-openapi-api</artifactId>
+      </dependency>
   </dependencies>
   <build>
     <plugins>
