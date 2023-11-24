@@ -18,7 +18,7 @@ import java.net.URI;
 public class CustomerResource {
 
     @POST
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRED)
     public Response createCustomer(@Valid Customer customer) {
         Customer.persistCustomer(customer);
         URI uri = UriBuilder.fromResource(CustomerResource.class)
@@ -29,7 +29,7 @@ public class CustomerResource {
 
     @GET
     @Path("{id}")
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRED)
     public Response getCustomerById(@PathParam("id") Long id) {
         Customer customer = Customer.findCustomerById(id);
         if (customer == null) {
@@ -40,7 +40,7 @@ public class CustomerResource {
 
     @GET
     @Path("/name/{name}")
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRED)
     public Response getCustomerByName(@PathParam("name") String name) {
         Customer customer = Customer.findCustomerByName(name);
         if (customer == null) {

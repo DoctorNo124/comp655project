@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package comp655groupproject.grpc;
+package comp655groupproject;
 
 // Importing necessary gRPC options for Java.
 option java_multiple_files = true;
-option java_package = "comp655groupproject.grpc";
+option java_package = "comp655groupproject";
 option java_outer_classname = "CustomerProto";
 
 // The Customer message, equivalent to your Customer entity.

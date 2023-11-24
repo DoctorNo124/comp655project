@@ -1,17 +1,5 @@
 package comp655groupproject;
 
-import comp655groupproject.grpc.CustomerMessage;
-import comp655groupproject.grpc.CustomerResponse;
-import comp655groupproject.grpc.CustomerServiceGrpc;
-import comp655groupproject.grpc.GetCustomerByIdRequest;
-import comp655groupproject.grpc.GetCustomerByNameRequest;
-import comp655groupproject.grpc.GetAllCustomersRequest;
-import comp655groupproject.grpc.GetRandomCustomerRequest;
-import comp655groupproject.grpc.CustomerListResponse;
-import comp655groupproject.grpc.UpdateCustomerRequest;
-import comp655groupproject.grpc.DeleteCustomerRequest;
-import comp655groupproject.grpc.UpdateCustomerBalanceRequest;
-import comp655groupproject.grpc.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,9 +11,8 @@ import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ApplicationScoped
-@GrpcService
 @Singleton
+@GrpcService
 public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImplBase {
 
     @Transactional
