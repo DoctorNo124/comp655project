@@ -6,19 +6,23 @@ import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 import comp655project.model.ItemOrder;
 import io.vertx.core.json.JsonObject;
+import jakarta.transaction.Transactional;
 public class OrderMqProcessor {
 	
 	
 	@Incoming("order-data")
     @Outgoing("order-response")
+    @Transactional(Transactional.TxType.REQUIRED)
     public Long processOrderQueue(JsonObject order) {
         try 
         { 
         	ItemOrder newOrder = order.mapTo(ItemOrder.class);
-        	newOrder.persist();
-        	return newOrder.getId();
-        
-            
+            ItemOrder orderToPersist = new ItemOrder();
+            orderToPersist.customerId = newOrder.customerId;
+            orderToPersist.productId = newOrder.productId;
+            orderToPersist.amount = newOrder.amount;
+        	orderToPersist.persist();
+        	return orderToPersist.id;
         } catch (Exception e) {
             
             throw new RuntimeException("Error processing Order message", e);
