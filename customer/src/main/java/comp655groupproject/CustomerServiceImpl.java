@@ -1,5 +1,10 @@
 package comp655groupproject;
 
+
+//This class provides gRPC service implementations that provides
+//the same CRUD operations over gRPC rather than HTTP/REST
+//it extends gRPC service base class generated from protobuf and implements the methods
+
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import jakarta.enterprise.context.ApplicationScoped;

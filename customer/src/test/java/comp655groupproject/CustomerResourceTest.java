@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @QuarkusTest
@@ -72,6 +71,8 @@ public class CustomerResourceTest {
 
         // Create an instance to capture the response from the gRPC service
         final List<CustomerResponse> responses = new ArrayList<>();
+        final List<Throwable> errors = new ArrayList<>();
+        final List<Boolean> completed = new ArrayList<>();
 
         // Implement the StreamObserver to capture the responses
         StreamObserver<CustomerResponse> responseObserver = new StreamObserver<CustomerResponse>() {
@@ -82,12 +83,12 @@ public class CustomerResourceTest {
 
             @Override
             public void onError(Throwable throwable) {
-                // handle error
+                errors.add(throwable);
             }
 
             @Override
             public void onCompleted() {
-                // handle completion
+                completed.add(true);
             }
         };
 
@@ -101,6 +102,8 @@ public class CustomerResourceTest {
         assertEquals("nogina@gmail.com", response.getEmail());
         assertEquals(200.00, response.getBalance(), 0.01);
 
+        assertTrue(errors.isEmpty(), "There should be no errors");
+        assertFalse(completed.isEmpty(), "The stream should state completion");
         // Clean up test data
         Customer.delete("email", "nogina@gmail.com");
     }

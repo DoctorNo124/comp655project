@@ -1,5 +1,7 @@
 package comp655groupproject;
 
+//RESTful resource class that defines HTTP/REST interface for interacting with customer data.
+//Uses @Path, @Get, @POST to map HTTP request to Java methods
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
