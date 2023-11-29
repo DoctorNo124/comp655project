@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
+
 @Entity
 @Table(name = "products")
 public class Product extends PanacheEntityBase {
@@ -26,10 +27,13 @@ public class Product extends PanacheEntityBase {
     @Min(message = "Quantity may not be negative", value = 0)
     public double price;
     
+    public Product() {
+    }
+
     public static Uni<Product> findProduct(long id) {
         return findById(id);
     }
-    
+
     public static Uni<Product> findRandomProduct() {
         Random random = new Random();
         return count()

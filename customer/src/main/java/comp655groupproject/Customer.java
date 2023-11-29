@@ -12,7 +12,6 @@ import java.util.List;
 public class Customer extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @NotEmpty(message ="Name cannot be empty")
@@ -54,7 +53,7 @@ public class Customer extends PanacheEntityBase {
     }
 
     public static Customer findRandomCustomer() {
-        return find("ORDER BY RAND()").firstResult();
+        return find("ORDER BY RANDOM()").firstResult();
     }
 
     public static boolean deleteCustomer(Long id) {
