@@ -5,9 +5,13 @@ import java.util.Random;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
+@Entity
+@Table(name = "products")
 public class Product extends PanacheEntityBase {
 
     @Min(message = "ID may not be negative", value = 0)
@@ -37,7 +41,7 @@ public class Product extends PanacheEntityBase {
         return listAll();
     }
     
-    public static Uni<Void> deleteProduct(long id) {
-        return deleteById(id).replaceWithVoid();
+    public static Uni<Boolean> deleteProduct(long id) {
+        return deleteById(id);
     }
 }

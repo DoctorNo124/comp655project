@@ -7,16 +7,8 @@ option java_outer_classname = "ProductProto";
 package product;
 
 service ProductService {
-    rpc findProduct (ProductIDMessage) returns (ProductMessage);
     rpc findRandomProduct (Empty) returns (ProductMessage);
-    rpc findAllProducts (Empty) returns (ProductListMessage);
     rpc updateProduct (ProductMessage) returns (ProductMessage);
-    rpc createProduct (ProductMessage) returns (ProductMessage);
-    rpc deleteProduct (ProductIDMessage) returns (Empty);
-}
-
-message ProductIDMessage {
-    int64 value = 1;
 }
 
 message ProductMessage {
@@ -24,10 +16,6 @@ message ProductMessage {
     string name = 2;
     int64 quantity = 3;
     double price = 4;
-}
-
-message ProductListMessage {
-    repeated ProductMessage products = 1;
 }
 
 message Empty {
