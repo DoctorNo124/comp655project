@@ -25,62 +25,14 @@ message CustomerResponse {
 
 // The service definition containing all the necessary methods.
 service CustomerService {
-    // Corresponds to POST /api/customers
-    rpc CreateCustomer(CustomerMessage) returns (CustomerResponse);
-
-    // Corresponds to GET /api/customers/{id}
-    rpc GetCustomerById(GetCustomerByIdRequest) returns (CustomerResponse);
-
-    // Corresponds to GET /api/customers/name/{name}
-    rpc GetCustomerByName(GetCustomerByNameRequest) returns (CustomerResponse);
-
-    // Corresponds to GET /api/customers
-    rpc GetAllCustomers(GetAllCustomersRequest) returns (CustomerListResponse);
-
-    // Corresponds to GET /api/customers/random
     rpc GetRandomCustomer(GetRandomCustomerRequest) returns (CustomerResponse);
-
-    // Corresponds to PUT /api/customers/{id}
     rpc UpdateCustomer(UpdateCustomerRequest) returns (CustomerResponse);
-
-    // Corresponds to DELETE /api/customers/{id}
-    rpc DeleteCustomer(DeleteCustomerRequest) returns (Empty);
-
-    // Corresponds to PATCH /api/customers/{id}/balance
-    rpc UpdateCustomerBalance(UpdateCustomerBalanceRequest) returns (CustomerResponse);
 }
-
-// Request messages.
-message GetCustomerByIdRequest {
-    int64 id = 1;
-}
-
-message GetCustomerByNameRequest {
-    string name = 1;
-}
-
-message GetAllCustomersRequest {}
 
 message GetRandomCustomerRequest {}
 
-// Response messages.
-message CustomerListResponse {
-    repeated CustomerResponse customers = 1;
-}
-
 message UpdateCustomerRequest {
     int64 id = 1;
-    CustomerMessage customer = 2; // Assuming you want to pass the customer details for update.
+    CustomerMessage customer = 2;
 }
 
-message DeleteCustomerRequest {
-    int64 id = 1;
-}
-
-message UpdateCustomerBalanceRequest {
-    int64 id = 1;
-    double newBalance = 2;
-}
-
-// Empty message for responses that do not return data.
-message Empty {}

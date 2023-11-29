@@ -1,7 +1,7 @@
-package comp655groupproject;
 
-//RESTful resource class that defines HTTP/REST interface for interacting with customer data.
-//Uses @Path, @Get, @POST to map HTTP request to Java methods
+/*RESTful resource class that defines HTTP/REST interface for interacting with customer data.
+Uses @Path, @Get, @POST to map HTTP request to Java methods*/
+package comp655groupproject;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.UriBuilder;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-
 import java.net.URI;
 
 @Path("/api/customers")
@@ -19,6 +18,7 @@ import java.net.URI;
 @Consumes("application/json")
 public class CustomerResource {
 
+    /* Creates a new customer in the database.*/
     @POST
     @Transactional(Transactional.TxType.REQUIRED)
     public Response createCustomer(@Valid Customer customer) {
@@ -29,6 +29,7 @@ public class CustomerResource {
         return Response.created(uri).entity(customer).build();
     }
 
+    /* Retrieves a customer by ID. Returns 404 Not Found if the customer does not exist. */
     @GET
     @Path("{id}")
     @Transactional(Transactional.TxType.REQUIRED)
@@ -40,6 +41,7 @@ public class CustomerResource {
         return Response.ok(customer).build();
     }
 
+    /* Retrieves a customer by  name. Returns 404 Not Found if the customer does not exist. */
     @GET
     @Path("/name/{name}")
     @Transactional(Transactional.TxType.REQUIRED)
@@ -51,13 +53,14 @@ public class CustomerResource {
         return Response.ok(customer).build();
     }
 
-
+    /* Retrieves a list of all customers in the database. */
     @GET
     @Transactional
     public Response getAllCustomers() {
         return Response.ok(Customer.findAllCustomers()).build();
     }
 
+    /* Retrieves a random customer from the database. */
     @GET
     @Path("/random")
     @Transactional
@@ -69,6 +72,8 @@ public class CustomerResource {
         return Response.ok(customer).build();
     }
 
+    /* Updates the details of an existing customer identified by ID.
+    Returns 404 Not Found if the customer does not exist. */
     @PUT
     @Path("{id}")
     @Transactional
@@ -85,6 +90,8 @@ public class CustomerResource {
         }
     }
 
+    /* Deletes a customer from the database by ID.
+    Returns 204 No Content on success, 404 Not Found if the customer does not exist. */
     @DELETE
     @Path("{id}")
     @Transactional
@@ -97,6 +104,7 @@ public class CustomerResource {
         }
     }
 
+    /* Updates the balance of a customer.*/
     @PATCH  // PATCH is for partial updates
     @Path("{id}/balance")
     @Transactional
@@ -108,7 +116,4 @@ public class CustomerResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
-
 }
-
-
