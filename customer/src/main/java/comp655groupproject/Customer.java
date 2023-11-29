@@ -1,18 +1,14 @@
 package comp655groupproject;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import java.util.List;
 
-@Entity
 @Table(name = "customers")
-public class Customer extends PanacheEntityBase {
-
-    @Id
-    public Long id;
+public class Customer extends PanacheEntity {
 
     @NotEmpty(message ="Name cannot be empty")
     public String name;

@@ -1,6 +1,7 @@
 package comp655project;
 
 import io.quarkus.grpc.GrpcService;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.WebApplicationException;
@@ -10,6 +11,8 @@ import jakarta.ws.rs.core.Response;
 public class ProductServiceImpl implements ProductService {
 
     @Override
+    @WithSession
+    @WithTransaction
     public Uni<ProductMessage> findRandomProduct(Empty request) {
         return Product.findRandomProduct()
                 .onItem().ifNull()
@@ -22,8 +25,9 @@ public class ProductServiceImpl implements ProductService {
                         .build());
     }
 
-    @WithTransaction
     @Override
+    @WithSession
+    @WithTransaction
     public Uni<ProductMessage> updateProduct(ProductMessage request) {
         return Product.findProduct(request.getId())
                 .onItem().ifNull()

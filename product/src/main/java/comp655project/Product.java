@@ -3,7 +3,7 @@ package comp655project;
 import java.util.List;
 import java.util.Random;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -13,10 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "products")
-public class Product extends PanacheEntityBase {
-
-    @Min(message = "ID may not be negative", value = 0)
-    public long id;
+public class Product extends PanacheEntity {
     
     @NotBlank(message = "Name may not be blank")
     public String name;
