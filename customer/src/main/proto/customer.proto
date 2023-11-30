@@ -33,6 +33,11 @@ message GetRandomCustomerRequest {}
 
 message UpdateCustomerRequest {
     int64 id = 1;
-    CustomerMessage customer = 2;
+    double balance = 2;
+}
+
+message ErrorResponse {
+    string expectedValue = 1;
+    int64 id = 2;
 }
 

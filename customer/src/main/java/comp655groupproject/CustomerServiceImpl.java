@@ -4,7 +4,9 @@ package comp655groupproject;
 //the same CRUD operations over gRPC rather than HTTP/REST
 //it extends gRPC service base class generated from protobuf and implements the methods
 
+import io.grpc.Metadata;
 import io.grpc.Status;
+import io.grpc.protobuf.ProtoUtils;
 import io.grpc.stub.StreamObserver;
 import jakarta.transaction.Transactional;
 import io.quarkus.grpc.GrpcService;
@@ -38,13 +40,11 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
     @Transactional
     public void updateCustomer(UpdateCustomerRequest request, StreamObserver<CustomerResponse> responseObserver) {
         Long id = request.getId();
-        CustomerMessage updatedInfo = request.getCustomer();
+        double newBalance = request.getBalance();
 
         Customer customer = Customer.findCustomerById(id);
         if (customer != null) {
-            customer.name = updatedInfo.getName();
-            customer.email = updatedInfo.getEmail();
-            customer.balance = updatedInfo.getBalance();
+            customer.balance = newBalance; // Only update the balance
             Customer.updateCustomer(customer);
 
             CustomerResponse response = CustomerResponse.newBuilder()
@@ -55,7 +55,16 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
                     .build();
             responseObserver.onNext(response);
         } else {
-            responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+            // Custom error handling
+            String errorMessage = "Customer with ID of " + id + " not found";
+            ErrorResponse errorResponse = ErrorResponse.newBuilder()
+                    .setExpectedValue("Valid customer ID")
+                    .setId(id)
+                    .build();
+            Metadata metadata = new Metadata();
+            Metadata.Key<ErrorResponse> errorResponseKey = ProtoUtils.keyForProto(ErrorResponse.getDefaultInstance());
+            metadata.put(errorResponseKey, errorResponse);
+            responseObserver.onError(Status.NOT_FOUND.withDescription(errorMessage).asRuntimeException(metadata));
         }
         responseObserver.onCompleted();
     }
