@@ -14,11 +14,11 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-
+import java.util.UUID;
 @Path("purchase")
 public class PurchaseResource {
 	@Channel("order-data") Emitter<ItemOrder> orderRequestEmitter;
-    @Channel("order-response") Multi<Long> orderResponses;
+    @Channel("order-response") Multi<UUID> orderResponses;
     
     @POST
     @Path("/order")
@@ -34,7 +34,7 @@ public class PurchaseResource {
     @Produces(MediaType.SERVER_SENT_EVENTS)
     @Consumes(MediaType.TEXT_PLAIN) 
     @Tag(name="Receive Response", description="Gives a stream of the Orders in String format from the student-honor queue")
-    public Multi<Long> recvResponse() { 
+    public Multi<UUID> recvResponse() { 
         return orderResponses;
     }
 

@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.UUID;
 
 @Path("/order")
 public class OrderResource {
@@ -47,7 +48,7 @@ public class OrderResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
     @Tag(name="Get order by ID", description="Gets an order by id and returns a not found if not found")
-    public Response getOrderById(long id) {
+    public Response getOrderById(UUID id) {
 		ItemOrder order = ItemOrder.findById(id);
         if(order == null) { 
             throw new NotFoundException();
