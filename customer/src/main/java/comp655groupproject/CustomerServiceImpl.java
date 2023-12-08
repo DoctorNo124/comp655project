@@ -1,5 +1,7 @@
 package comp655groupproject;
 
+import comp655project.*;
+
 //This class provides gRPC service implementations that provides
 //the same CRUD operations over gRPC rather than HTTP/REST
 //it extends gRPC service base class generated from protobuf and implements the methods

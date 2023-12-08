@@ -1,41 +1,86 @@
 package comp655project;
 
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.eclipse.microprofile.reactive.messaging.Channel;
+import java.util.UUID;
+
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.eclipse.microprofile.reactive.messaging.Metadata;
+
+import io.quarkus.grpc.GrpcClient;
 import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("purchase")
+@Path("/purchase")
 public class PurchaseResource {
-	@Channel("order-data") Emitter<ItemOrder> orderRequestEmitter;
-    @Channel("order-response") Multi<Long> orderResponses;
+
+    @GrpcClient("customer")
+    CustomerServiceGrpc.CustomerServiceBlockingStub blockingCustomerService;
+    @GrpcClient("product")
+    MutinyProductServiceGrpc.MutinyProductServiceStub mutinyProductService;
+
+	@Channel("order-data") Emitter<String> orderRequestEmitter;
+    @Channel("order-response") Multi<UUID> orderResponses;
+    
+    static CustomerResponse customer;
+    static Uni<ProductMessage> product;
+    static double price;
+    static boolean sent;
+    static UUID orderId;
     
     @POST
-    @Path("/order")
+    @Path("/purchase")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
- public Message<ItemOrder> sendOrder(ItemOrder order) {
-    Message<ItemOrder> message = Message.of(order);
-    orderRequestEmitter.send(message);
-    return message;
-}
-    @GET
-    @Path("/response")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    @Consumes(MediaType.TEXT_PLAIN) 
-    @Tag(name="Receive Response", description="Gives a stream of the Orders in String format from the student-honor queue")
-    public Multi<Long> recvResponse() { 
-        return orderResponses;
+    public Purchase createPurchase(Purchase purchase) {
+        customer = blockingCustomerService.getRandomCustomer(null);
+        sent = false;
+        while (!sent) {
+            for (int i = 0; i < 3 && !sent; i++) {
+                product = mutinyProductService.findRandomProduct(null).map(
+                        product -> {
+                            Message<String> message = null;
+                            if (customer.getBalance() >= product.getPrice()) {
+                                price = product.getPrice();
+                                orderId = UUID.randomUUID();
+                                long customerId = customer.getId();
+                                long productId = product.getId();
+                                message = Message.of(orderId + " " + customerId + " " + productId);
+                                orderRequestEmitter.send(message);
+                                sent = true;
+                            }
+                            return null;
+                        });
+            }
+            customer = blockingCustomerService.getRandomCustomer(null);
+        }
+        orderResponses.subscribe().with(
+                item -> {
+                    if (item == orderId) {
+                        customer.toBuilder().setBalance(customer.getBalance() - price).build();
+                        UpdateCustomerRequest customerRequest = UpdateCustomerRequest.newBuilder()
+                                .setId(customer.getId())
+                                .setBalance(customer.getBalance())
+                                .build();
+                        blockingCustomerService.updateCustomer(customerRequest);
+                        product.map(product -> {
+                            product.toBuilder().setQuantity(product.getQuantity() - 1).build();
+                            UpdateProductRequest productRequest = UpdateProductRequest.newBuilder()
+                                    .setId(product.getId())
+                                    .setQuantity(product.getQuantity())
+                                    .build();
+                            mutinyProductService.updateProduct(productRequest);
+                            return null;
+                        });
+                    }
+                });
+        purchase.customer = customer;
+        purchase.product = product;
+        return purchase;
     }
 
 }

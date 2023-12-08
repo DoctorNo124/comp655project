@@ -28,16 +28,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @WithSession
     @WithTransaction
-    public Uni<ProductMessage> updateProduct(ProductMessage request) {
+    public Uni<ProductMessage> updateProduct(UpdateProductRequest request) {
         return Product.findProduct(request.getId())
                 .onItem().ifNull()
                 .failWith(() -> new WebApplicationException(Response.Status.NOT_FOUND))
                 .onItem().ifNotNull()
                 .transform(product -> {
                     product.id = request.getId();
-                    product.name = request.getName();
                     product.quantity = request.getQuantity();
-                    product.price = request.getPrice();
                     return product;
                 })
                 .map(product -> ProductMessage.newBuilder()
