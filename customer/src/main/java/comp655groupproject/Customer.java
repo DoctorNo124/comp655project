@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import java.util.List;
 
+@Entity
 @Table(name = "customers")
 public class Customer extends PanacheEntity {
 

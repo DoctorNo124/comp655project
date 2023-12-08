@@ -6,6 +6,7 @@ import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 import comp655project.model.ItemOrder;
 import io.vertx.core.json.JsonObject;
+import java.util.UUID;
 import jakarta.transaction.Transactional;
 public class OrderMqProcessor {
 	
@@ -13,11 +14,12 @@ public class OrderMqProcessor {
 	@Incoming("order-data")
     @Outgoing("order-response")
     @Transactional(Transactional.TxType.REQUIRED)
-    public Long processOrderQueue(JsonObject order) {
+    public UUID processOrderQueue(JsonObject order) {
         try 
         { 
         	ItemOrder newOrder = order.mapTo(ItemOrder.class);
             ItemOrder orderToPersist = new ItemOrder();
+            orderToPersist.id = newOrder.id;
             orderToPersist.customerId = newOrder.customerId;
             orderToPersist.productId = newOrder.productId;
             orderToPersist.amount = newOrder.amount;
