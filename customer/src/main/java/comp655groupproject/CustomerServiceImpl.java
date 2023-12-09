@@ -13,6 +13,7 @@ import io.grpc.stub.StreamObserver;
 import jakarta.transaction.Transactional;
 import io.quarkus.grpc.GrpcService;
 import jakarta.inject.Singleton;
+import java.util.List;
 
 @Singleton
 @GrpcService
@@ -21,7 +22,7 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
     /* gRPC's method that retrieves a random customer from the database */
     @Transactional
     @Override
-    public void getRandomCustomer(GetRandomCustomerRequest request, StreamObserver<CustomerResponse> responseObserver) {
+    public void getRandomCustomer(Empty request, StreamObserver<CustomerResponse> responseObserver) {
         Customer customer = Customer.findRandomCustomer();
         if (customer != null) {
             CustomerResponse response = CustomerResponse.newBuilder()
@@ -71,5 +72,22 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
         responseObserver.onCompleted();
     }
 
-}
+    @Override
+    @Transactional
+    public void getAllCustomers(Empty request, StreamObserver<AllCustomers> responseObserver) {
+        List<Customer> customers = Customer.findAllCustomers();
+        AllCustomers.Builder allCustomersBuilder = AllCustomers.newBuilder();
+        for(Customer customer : customers) { 
+            CustomerResponse response = CustomerResponse.newBuilder()
+                    .setId(customer.id)
+                    .setName(customer.name)
+                    .setEmail(customer.email)
+                    .setBalance(customer.balance)
+                    .build();
+            allCustomersBuilder.addCustomers(response);
+        }
+        responseObserver.onNext(allCustomersBuilder.build());
+        responseObserver.onCompleted();
+    }
 
+}

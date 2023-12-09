@@ -9,16 +9,9 @@ package customer;
 
 // The service definition containing all the necessary methods.
 service CustomerService {
-    rpc GetRandomCustomer(GetRandomCustomerRequest) returns (CustomerResponse);
+    rpc GetRandomCustomer(Empty) returns (CustomerResponse);
     rpc UpdateCustomer(UpdateCustomerRequest) returns (CustomerResponse);
-}
-
-// The Customer message, equivalent to your Customer entity.
-message CustomerMessage {
-    int64 id = 1;
-    string name = 2;
-    string email = 3;
-    double balance = 4;
+    rpc GetAllCustomers(Empty) returns (AllCustomers);
 }
 
 // The CustomerResponse message, used for returning customer data.
@@ -29,7 +22,11 @@ message CustomerResponse {
     double balance = 4;
 }
 
-message GetRandomCustomerRequest {}
+message AllCustomers { 
+    repeated CustomerResponse customers = 1;
+}
+
+message Empty {}
 
 message UpdateCustomerRequest {
     int64 id = 1;
