@@ -1,18 +1,18 @@
 package comp655project;
 
-import io.smallrye.mutiny.Uni;
+import java.util.UUID;
 
 public class Purchase {
 
-    public long orderId;
-    public CustomerResponse customer;
-    public Uni<ProductMessage> product;
+    public UUID orderId;
+    public Customer customer;
+    public Product product;
     
     public Purchase() {
         
     }
     
-    public Purchase(long orderId, CustomerResponse customer, Uni<ProductMessage> product) {
+    public Purchase(UUID orderId, Customer customer, Product product) {
         this.orderId = orderId;
         this.customer = customer;
         this.product = product;

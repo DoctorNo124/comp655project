@@ -23,11 +23,11 @@ public class PurchaseResource {
     @GrpcClient("product")
     MutinyProductServiceGrpc.MutinyProductServiceStub mutinyProductService;
 
-	@Channel("order-data") Emitter<String> orderRequestEmitter;
+	@Channel("order-data") Emitter<ItemOrder> orderRequestEmitter;
     @Channel("order-response") Multi<UUID> orderResponses;
     
     static CustomerResponse customer;
-    static Uni<ProductMessage> product;
+    static ProductMessage product;
     static double price;
     static boolean sent;
     static UUID orderId;
@@ -36,25 +36,29 @@ public class PurchaseResource {
     @Path("/purchase")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Purchase createPurchase(Purchase purchase) {
+    public Purchase createPurchase() {
+        Purchase purchase = new Purchase();
         customer = blockingCustomerService.getRandomCustomer(null);
         sent = false;
         while (!sent) {
             for (int i = 0; i < 3 && !sent; i++) {
-                product = mutinyProductService.findRandomProduct(null).map(
+                mutinyProductService.findRandomProduct(null).map(
                         product -> {
-                            Message<String> message = null;
+                            Message<ItemOrder> message = null;
                             if (customer.getBalance() >= product.getPrice()) {
                                 price = product.getPrice();
+                                ItemOrder order = new ItemOrder();
+                                order.customerId = customer.getId();
+                                order.productId = product.getId();
                                 orderId = UUID.randomUUID();
-                                long customerId = customer.getId();
-                                long productId = product.getId();
-                                message = Message.of(orderId + " " + customerId + " " + productId);
+                                order.id = orderId;
+                                order.amount = 1;
+                                message = Message.of(order);
                                 orderRequestEmitter.send(message);
                                 sent = true;
                             }
-                            return null;
-                        });
+                            return product;
+                        }).subscribe().with(result -> product = result);
             }
             customer = blockingCustomerService.getRandomCustomer(null);
         }
@@ -67,19 +71,17 @@ public class PurchaseResource {
                                 .setBalance(customer.getBalance())
                                 .build();
                         blockingCustomerService.updateCustomer(customerRequest);
-                        product.map(product -> {
                             product.toBuilder().setQuantity(product.getQuantity() - 1).build();
                             UpdateProductRequest productRequest = UpdateProductRequest.newBuilder()
                                     .setId(product.getId())
                                     .setQuantity(product.getQuantity())
                                     .build();
                             mutinyProductService.updateProduct(productRequest);
-                            return null;
-                        });
                     }
                 });
-        purchase.customer = customer;
-        purchase.product = product;
+        purchase.customer = new Customer(customer.getName(), customer.getEmail(), customer.getBalance());
+        purchase.product = new Product(product.getName(), product.getQuantity(), product.getPrice());
+        purchase.orderId = orderId;
         return purchase;
     }
 
