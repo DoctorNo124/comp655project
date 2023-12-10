@@ -12,6 +12,7 @@ service CustomerService {
     rpc GetRandomCustomer(Empty) returns (CustomerResponse);
     rpc UpdateCustomer(UpdateCustomerRequest) returns (CustomerResponse);
     rpc GetAllCustomers(Empty) returns (AllCustomers);
+    rpc CreateCustomer(CreateCustomerRequest) returns (CustomerResponse);
 }
 
 // The CustomerResponse message, used for returning customer data.
@@ -31,6 +32,12 @@ message Empty {}
 message UpdateCustomerRequest {
     int64 id = 1;
     double balance = 2;
+}
+
+message CreateCustomerRequest {
+    string name = 1;
+    string email = 2;
+    double balance = 3;
 }
 
 message ErrorResponse {

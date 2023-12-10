@@ -90,4 +90,24 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
         responseObserver.onCompleted();
     }
 
+    @Override
+    @Transactional
+    public void createCustomer(CreateCustomerRequest request, StreamObserver<CustomerResponse> responseObserver) {
+        try {
+            Customer customer = new Customer(request.getName(), request.getEmail(), request.getBalance());
+            Customer.persistCustomer(customer);
+
+            CustomerResponse response = CustomerResponse.newBuilder()
+                    .setId(customer.id)
+                    .setName(customer.name)
+                    .setEmail(customer.email)
+                    .setBalance(customer.balance)
+                    .build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(Status.INTERNAL.withDescription(e.getMessage()).asRuntimeException());
+        }
+    }
+
 }

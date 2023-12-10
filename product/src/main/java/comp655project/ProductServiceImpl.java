@@ -45,4 +45,47 @@ public class ProductServiceImpl implements ProductService {
                         .setPrice(product.price)
                         .build());
     }
+
+
+    @Override
+    @WithSession
+    @WithTransaction
+    public Uni<ProductListResponse> listProducts(Empty request) {
+        return Product.findAllProducts()
+                .onItem().transform(products -> {
+                    ProductListResponse.Builder responseBuilder = ProductListResponse.newBuilder();
+                    for (Product product : products) {
+                        ProductMessage productMessage = ProductMessage.newBuilder()
+                                .setId(product.id)
+                                .setName(product.name)
+                                .setQuantity(product.quantity)
+                                .setPrice(product.price)
+                                .build();
+                        responseBuilder.addProducts(productMessage);
+                    }
+                    return responseBuilder.build();
+                });
+    }
+
+    @Override
+    @WithSession
+    @WithTransaction
+    public Uni<ProductResponse> createProduct(CreateProductRequest request) {
+        Product product = new Product();
+        product.name = request.getName();
+        product.quantity = request.getQuantity();
+        product.price = request.getPrice();
+
+        return product.persist()
+                .onItem().transform(persisted -> ProductResponse.newBuilder()
+                        .setProduct(ProductMessage.newBuilder()
+                                .setId(product.id)
+                                .setName(product.name)
+                                .setQuantity(product.quantity)
+                                .setPrice(product.price)
+                                .build())
+                        .build());
+    }
+
+
 }
