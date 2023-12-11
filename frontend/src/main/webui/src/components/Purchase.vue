@@ -19,8 +19,8 @@
                     <v-card class="text-center">
                         <v-card-title class="mb-5">Product</v-card-title>
                         <v-card-text>Name: {{ purchase.product.name }}</v-card-text>
-                        <v-card-text>Email: {{ productNewQuantity }}</v-card-text>
-                        <v-card-text>Balance: {{ purchase.product.price }}</v-card-text>
+                        <v-card-text>Quantity: {{ productNewQuantity }}</v-card-text>
+                        <v-card-text>Price: {{ purchase.product.price }}</v-card-text>
                     </v-card>
                 </v-col>
                 <v-spacer></v-spacer>
