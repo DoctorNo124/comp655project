@@ -15,6 +15,7 @@ import io.quarkus.grpc.GrpcService;
 import jakarta.inject.Singleton;
 import java.util.List;
 
+// Declaring the class as a Singleton and a gRPC Service
 @Singleton
 @GrpcService
 public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImplBase {
@@ -23,7 +24,9 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
     @Transactional
     @Override
     public void getRandomCustomer(Empty request, StreamObserver<CustomerResponse> responseObserver) {
+        // Finding a random customer from the database
         Customer customer = Customer.findRandomCustomer();
+        // If a customer is found, provides the details
         if (customer != null) {
             CustomerResponse response = CustomerResponse.newBuilder()
                     .setId(customer.id)
@@ -38,18 +41,18 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
         responseObserver.onCompleted();
     }
 
-    /* Updates customer details */
+    /* Method to updates customer's details */
     @Override
     @Transactional
     public void updateCustomer(UpdateCustomerRequest request, StreamObserver<CustomerResponse> responseObserver) {
         Long id = request.getId();
         double newBalance = request.getBalance();
-
+        // Finding the customer by ID
         Customer customer = Customer.findCustomerById(id);
         if (customer != null) {
             customer.balance = newBalance; // Only update the balance
             Customer.updateCustomer(customer);
-
+            // Creating and sending the updated customer response
             CustomerResponse response = CustomerResponse.newBuilder()
                     .setId(customer.id)
                     .setName(customer.name)
@@ -72,6 +75,7 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
         responseObserver.onCompleted();
     }
 
+    // Method to find all customers in database
     @Override
     @Transactional
     public void getAllCustomers(Empty request, StreamObserver<AllCustomers> responseObserver) {
@@ -90,6 +94,7 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
         responseObserver.onCompleted();
     }
 
+    //Method to create new customer
     @Override
     @Transactional
     public void createCustomer(CreateCustomerRequest request, StreamObserver<CustomerResponse> responseObserver) {
