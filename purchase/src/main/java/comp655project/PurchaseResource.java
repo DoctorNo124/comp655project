@@ -116,8 +116,8 @@ public class PurchaseResource {
     @Path("customers")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Customer createCustomer(CreateCustomerRequest request) { 
-        CustomerResponse response = blockingCustomerService.createCustomer(request);
+    public Customer createCustomer(Customer request) { 
+        CustomerResponse response = blockingCustomerService.createCustomer(CreateCustomerRequest.newBuilder().setName(request.name).setEmail(request.email).setBalance(request.balance).build());
         return new Customer(response.getId(), response.getName(), response.getEmail(), response.getBalance());
     }
 
@@ -125,8 +125,8 @@ public class PurchaseResource {
     @Path("products")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Product> createProduct(CreateProductRequest request) { 
-       return mutinyProductService.createProduct(request).onItem().transformToUni(productMessage -> { 
+    public Uni<Product> createProduct(Product request) { 
+       return mutinyProductService.createProduct(CreateProductRequest.newBuilder().setName(request.name).setQuantity(request.quantity).setPrice(request.price).build()).onItem().transformToUni(productMessage -> { 
             return Uni.createFrom().item(new Product(productMessage.getId(), productMessage.getName(), productMessage.getQuantity(), productMessage.getPrice()));
         });
     }
