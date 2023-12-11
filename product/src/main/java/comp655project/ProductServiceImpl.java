@@ -36,6 +36,7 @@ public class ProductServiceImpl implements ProductService {
                 .transform(product -> {
                     product.id = request.getId();
                     product.quantity = request.getQuantity();
+                    product.persist();
                     return product;
                 })
                 .map(product -> ProductMessage.newBuilder()
@@ -70,21 +71,19 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @WithSession
     @WithTransaction
-    public Uni<ProductResponse> createProduct(CreateProductRequest request) {
+    public Uni<ProductMessage> createProduct(CreateProductRequest request) {
         Product product = new Product();
         product.name = request.getName();
         product.quantity = request.getQuantity();
         product.price = request.getPrice();
 
         return product.persist()
-                .onItem().transform(persisted -> ProductResponse.newBuilder()
-                        .setProduct(ProductMessage.newBuilder()
+                .onItem().transform(item -> ProductMessage.newBuilder()
                                 .setId(product.id)
                                 .setName(product.name)
                                 .setQuantity(product.quantity)
                                 .setPrice(product.price)
-                                .build())
-                        .build());
+                                .build());
     }
 
 

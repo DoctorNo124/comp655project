@@ -10,7 +10,7 @@ service ProductService {
     rpc findRandomProduct (Empty) returns (ProductMessage);
     rpc updateProduct (UpdateProductRequest) returns (ProductMessage);
     rpc ListProducts(Empty) returns (ProductListResponse);
-    rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
+    rpc CreateProduct(CreateProductRequest) returns (ProductMessage);
 }
 
 message ProductMessage {
@@ -34,10 +34,6 @@ message CreateProductRequest {
 
 message ProductListResponse {
     repeated ProductMessage products = 1;
-}
-
-message ProductResponse {
-    ProductMessage product = 1;
 }
 
 message Empty {
