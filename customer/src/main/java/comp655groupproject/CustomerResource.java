@@ -12,6 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import java.net.URI;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/api/customers") // Base path for all methods in this class
 @Produces("application/json") // Specifies that methods produce JSON output
@@ -21,6 +22,7 @@ public class CustomerResource {
     /* Creates a new customer in the database.*/
     @POST // Maps to HTTP POST method
     @Transactional(Transactional.TxType.REQUIRED) // Specifies transaction type
+    @Tag(name = "Create Customer", description = "Creates a new customer in the database")
     public Response createCustomer(@Valid Customer customer) {
         Customer.persistCustomer(customer);
         URI uri = UriBuilder.fromResource(CustomerResource.class)
@@ -33,6 +35,7 @@ public class CustomerResource {
     @GET  // Maps to HTTP GET method
     @Path("{id}") // Path parameter for customer ID
     @Transactional(Transactional.TxType.REQUIRED) // Specifies transaction type
+    @Tag(name = "Find Customer by ID", description = "Find a customer by id")
     public Response getCustomerById(@PathParam("id") Long id) {
         Customer customer = Customer.findCustomerById(id);
         if (customer == null) {
@@ -45,6 +48,7 @@ public class CustomerResource {
     @GET // Maps to HTTP GET method
     @Path("/name/{name}")
     @Transactional(Transactional.TxType.REQUIRED) // Specifies transaction type
+    @Tag(name = "Get Customer by name", description = "Find a customer by name")
     public Response getCustomerByName(@PathParam("name") String name) {
         Customer customer = Customer.findCustomerByName(name);
         if (customer == null) {
@@ -56,6 +60,7 @@ public class CustomerResource {
     /* Retrieves a list of all customers in the database. */
     @GET // Maps to HTTP GET method
     @Transactional // Specifies transaction type
+    @Tag(name = "Get All Customers", description = "Pulls a list of all customers from the database")
     public Response getAllCustomers() {
         return Response.ok(Customer.findAllCustomers()).build();
     }
@@ -64,6 +69,7 @@ public class CustomerResource {
     @GET // Maps to HTTP GET method
     @Path("/random")
     @Transactional // Specifies transaction type
+    @Tag(name = "Gets a random customer", description = "Pulls a random customer from the database")
     public Response getRandomCustomer() {
         Customer customer = Customer.findRandomCustomer();
         if (customer == null) {
@@ -77,6 +83,7 @@ public class CustomerResource {
     @PUT // Maps to HTTP PUT method
     @Path("{id}") // Path parameter for customer ID
     @Transactional // Specifies transaction type
+    @Tag(name = "Updates customer", description = "Updates the details of an existing customer by id")
     @Operation(summary = "Update a customer by their ID")
     @APIResponse(responseCode = "200", description = "Customer updated successfully")
     @APIResponse(responseCode = "404", description = "Customer not found")
@@ -95,6 +102,7 @@ public class CustomerResource {
     @DELETE // Maps to HTTP DELETE method
     @Path("{id}") // Path parameter for customer ID
     @Transactional // Specifies transaction type
+    @Tag(name = "Deletes a customer", description = "Deletes a customer from by id")
     public Response deleteCustomer(@PathParam("id") Long id) {
         boolean deleted = Customer.deleteCustomer(id);
         if (deleted) {
@@ -108,6 +116,7 @@ public class CustomerResource {
     @PATCH  // PATCH is for partial updates
     @Path("{id}/balance") // Path parameter for customer ID and balance
     @Transactional // Specifies transaction type
+    @Tag(name = "Updates a customer balance", description = "Updates the balance of a customer")
     public Response updateCustomerBalance(@PathParam("id") Long id, @QueryParam("newBalance") double newBalance) {
         Customer customer = Customer.updateCustomerBalance(id, newBalance);
         if (customer != null) {

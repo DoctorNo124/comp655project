@@ -14,15 +14,18 @@ import jakarta.transaction.Transactional;
 import io.quarkus.grpc.GrpcService;
 import jakarta.inject.Singleton;
 import java.util.List;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 // Declaring the class as a Singleton and a gRPC Service
 @Singleton
 @GrpcService
+@Tag(name = "Customer Service", description = "Customers's updates")
 public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImplBase {
 
     /* gRPC's method that retrieves a random customer from the database */
     @Transactional
     @Override
+    @Tag(name = "Get Random Customer", description = "Find a random customer from the database")
     public void getRandomCustomer(Empty request, StreamObserver<CustomerResponse> responseObserver) {
         // Finding a random customer from the database
         Customer customer = Customer.findRandomCustomer();
@@ -44,6 +47,7 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
     /* Method to updates customer's details */
     @Override
     @Transactional
+    @Tag(name = "Update Customer", description = "Update a customer's details")
     public void updateCustomer(UpdateCustomerRequest request, StreamObserver<CustomerResponse> responseObserver) {
         Long id = request.getId();
         double newBalance = request.getBalance();
@@ -78,10 +82,11 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
     // Method to find all customers in database
     @Override
     @Transactional
+    @Tag(name = "Get All Customers", description = "Find all customers in the database")
     public void getAllCustomers(Empty request, StreamObserver<AllCustomers> responseObserver) {
         List<Customer> customers = Customer.findAllCustomers();
         AllCustomers.Builder allCustomersBuilder = AllCustomers.newBuilder();
-        for(Customer customer : customers) { 
+        for(Customer customer : customers) {
             CustomerResponse response = CustomerResponse.newBuilder()
                     .setId(customer.id)
                     .setName(customer.name)
@@ -97,6 +102,7 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
     //Method to create new customer
     @Override
     @Transactional
+    @Tag(name = "Create Customer", description = "Create a new customer")
     public void createCustomer(CreateCustomerRequest request, StreamObserver<CustomerResponse> responseObserver) {
         try {
             Customer customer = new Customer(request.getName(), request.getEmail(), request.getBalance());
