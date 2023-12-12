@@ -2,6 +2,8 @@ package comp655project;
 
 import java.util.List;
 
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.Consumes;
@@ -23,6 +25,7 @@ public class ProductResource {
 
     @GET
     @Path("/product/{id}")
+    @Tag(name = "Get Product", description = "Gets a product by its ID")
     public Uni<Product> getProduct(@PathParam("id") long id) {
         return Product.findProduct(id).onItem().ifNull()
                 .failWith(() -> new WebApplicationException(Response.Status.NOT_FOUND));
@@ -30,6 +33,7 @@ public class ProductResource {
     
     @GET
     @Path("/product/random")
+    @Tag(name = "Get Random Product", description = "Gets a random product")
     public Uni<Product> getRandomProduct() {
         return Product.findRandomProduct().onItem().ifNull()
                 .failWith(() -> new WebApplicationException(Response.Status.NOT_FOUND));
@@ -37,12 +41,14 @@ public class ProductResource {
 
     @GET
     @Path("/products")
+    @Tag(name = "Get All Products", description = "Gets all products")
     public Uni<List<Product>> getAllProducts() {
         return Product.findAllProducts();
     }
     
     @PUT
     @Path("/product/{id}")
+    @Tag(name = "Update Product", description = "Updates a product")
     @WithTransaction
     public Uni<Product> updateProduct(@PathParam("id") long id, Product product) {
         return Product.findProduct(id)
@@ -59,6 +65,7 @@ public class ProductResource {
 
     @POST
     @Path("/product")
+    @Tag(name = "Create Product", description = "Creates a product")
     @WithTransaction
     public Uni<Product> createProduct(Product product) {
         return product.persist();
@@ -66,6 +73,7 @@ public class ProductResource {
 
     @DELETE
     @Path("/product/{id}")
+    @Tag(name = "Delete Product", description = "Deletes a product")
     @WithTransaction
     public Uni<Boolean> deleteProduct(@PathParam("id") long id) {
         return Product.deleteProduct(id);
