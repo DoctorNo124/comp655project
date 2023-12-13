@@ -26,6 +26,12 @@ public class Product extends PanacheEntity {
     
     public Product() {
     }
+    
+    public Product(String name, long quantity, double price) {
+        this.name = name;
+        this.quantity = quantity;
+        this.price = price;
+    }
 
     public static Uni<Product> findProduct(long id) {
         return findById(id);
