@@ -31,21 +31,21 @@ public class ProductResourceTest {
             .then()
             .extract()
             .statusCode();
-        assertTrue(statusCode == 200);
+        assertTrue(statusCode == 201);
     }
     
     @Test
     public void testGetProduct() {
         var response = given()
-            .pathParam("id", 451)
+            .pathParam("id", 2)
             .when()
             .get("/product/{id}")
             .then()
             .extract()
             .response();
-        assertEquals(response.jsonPath().getString("name"), "Product 10");
-        assertEquals(response.jsonPath().getInt("quantity"), 1000L);
-        assertEquals(response.jsonPath().getDouble("price"), 75.00);
+        assertEquals(response.jsonPath().getString("name"), "Xbox Series S");
+        assertEquals(response.jsonPath().getInt("quantity"), 100L);
+        assertEquals(response.jsonPath().getDouble("price"), 399.99);
     }
 
     @Test
@@ -63,35 +63,29 @@ public class ProductResourceTest {
     
     @Test
     public void testUpdateProduct() {
-        var response = given()
-            .body(new Product("Product 10", 1000L, 75.00))
+        var statusCode = given()
+            .body(new Product("Xbox Series X", 30L, 499.99))
             .contentType(MediaType.APPLICATION_JSON)
-            .pathParam("id", 451)
+            .pathParam("id", 1)
             .when()
             .put("/product/{id}")
             .then()
-            .statusCode(200)
             .extract()
-            .response();
-        assertEquals(response.jsonPath().getString("name"), "Product 10");
-        assertEquals(response.jsonPath().getInt("quantity"), 1000L);
-        assertEquals(response.jsonPath().getDouble("price"), 75.00);
+            .statusCode();
+        assertEquals(statusCode, 204);
     }
 
     @Test
     public void testCreateProduct() {
-        var response = given()
+        var statusCode = given()
             .body(new Product("PlayStation 5", 30L, 499.99))
             .contentType(MediaType.APPLICATION_JSON)
             .when()
             .post("/product")
             .then()
-            .statusCode(200)
             .extract()
-            .response();
-        assertEquals(response.jsonPath().getString("name"), "PlayStation 5");
-        assertEquals(response.jsonPath().getInt("quantity"), 30);
-        assertEquals(response.jsonPath().getDouble("price"), 499.99);
+            .statusCode();
+        assertEquals(statusCode, 201);
     }
 
     @Test
@@ -100,7 +94,7 @@ public class ProductResourceTest {
             .pathParam("id", 1)
             .delete("/product/{id}")
             .then()
-            .statusCode(200);
+            .statusCode(204);
         var response = given()
             .when()
             .get("/products")
@@ -108,7 +102,7 @@ public class ProductResourceTest {
             .statusCode(200)
             .extract()
             .response();
-        assertFalse(response.jsonPath().getString("name").contains("Product 15"));
+        assertFalse(response.jsonPath().getList("name").contains("Nintendo Switch"));
     }
     
     @Test
