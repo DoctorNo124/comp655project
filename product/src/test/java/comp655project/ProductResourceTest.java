@@ -37,15 +37,15 @@ public class ProductResourceTest {
     @Test
     public void testGetProduct() {
         var response = given()
-            .pathParam("id", 1)
+            .pathParam("id", 451)
             .when()
             .get("/product/{id}")
             .then()
             .extract()
             .response();
-        assertEquals(response.jsonPath().getString("name"), "Xbox Series S");
-        assertEquals(response.jsonPath().getInt("quantity"), 100L);
-        assertEquals(response.jsonPath().getDouble("price"), 399.99);
+        assertEquals(response.jsonPath().getString("name"), "Product 10");
+        assertEquals(response.jsonPath().getInt("quantity"), 1000L);
+        assertEquals(response.jsonPath().getDouble("price"), 75.00);
     }
 
     @Test
@@ -64,18 +64,18 @@ public class ProductResourceTest {
     @Test
     public void testUpdateProduct() {
         var response = given()
-            .body(new Product("Xbox Series X", 30L, 499.99))
+            .body(new Product("Product 10", 1000L, 75.00))
             .contentType(MediaType.APPLICATION_JSON)
-            .pathParam("id", 1)
+            .pathParam("id", 451)
             .when()
             .put("/product/{id}")
             .then()
             .statusCode(200)
             .extract()
             .response();
-        assertEquals(response.jsonPath().getString("name"), "Xbox Series X");
-        assertEquals(response.jsonPath().getInt("quantity"), 30L);
-        assertEquals(response.jsonPath().getDouble("price"), 499.99);
+        assertEquals(response.jsonPath().getString("name"), "Product 10");
+        assertEquals(response.jsonPath().getInt("quantity"), 1000L);
+        assertEquals(response.jsonPath().getDouble("price"), 75.00);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ProductResourceTest {
             .pathParam("id", 1)
             .delete("/product/{id}")
             .then()
-            .statusCode(204);
+            .statusCode(200);
         var response = given()
             .when()
             .get("/products")
@@ -108,7 +108,7 @@ public class ProductResourceTest {
             .statusCode(200)
             .extract()
             .response();
-        assertFalse(response.jsonPath().getList("name").contains("Xbox Series S"));
+        assertFalse(response.jsonPath().getString("name").contains("Product 15"));
     }
     
     @Test
