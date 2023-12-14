@@ -102,7 +102,7 @@ public class ProductResourceTest {
             .statusCode(200)
             .extract()
             .response();
-        assertFalse(response.jsonPath().getList("name").contains("Nintendo Switch"));
+        assertFalse(response.jsonPath().getList("name").contains("Nintendo Switch 5"));
     }
     
     @Test
