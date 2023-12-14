@@ -2,8 +2,12 @@ package comp655project;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
-import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+
 import jakarta.ws.rs.core.MediaType;
 import static io.restassured.RestAssured.given;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
@@ -11,33 +15,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.wildfly.common.Assert.assertTrue;
 
+import org.awaitility.Awaitility;
+
 @QuarkusTest
 @TestHTTPEndpoint(ProductResource.class)
+@TestMethodOrder(OrderAnnotation.class)
 public class ProductResourceTest {
-
-
-    @BeforeEach
-    public void setup() {
-        addTestProduct(new Product("Nintendo Switch", 50L, 299.99));
-        addTestProduct(new Product("Xbox Series S", 100L, 399.99));
-    }
-
-    private void addTestProduct(Product product) {
-        int statusCode = given()
-            .body(product)
-            .contentType(MediaType.APPLICATION_JSON)
-            .when()
-            .post("/product")
-            .then()
-            .extract()
-            .statusCode();
-        assertTrue(statusCode == 201);
-    }
     
     @Test
+    @Order(1)
     public void testGetProduct() {
         var response = given()
-            .pathParam("id", 2)
+            .pathParam("id", 51)
             .when()
             .get("/product/{id}")
             .then()
@@ -49,6 +38,7 @@ public class ProductResourceTest {
     }
 
     @Test
+    @Order(2)
     public void testGetAllProducts() {
         var response = given()
             .when()
@@ -62,11 +52,12 @@ public class ProductResourceTest {
     }
     
     @Test
+    @Order(3)
     public void testUpdateProduct() {
         var statusCode = given()
             .body(new Product("Xbox Series X", 30L, 499.99))
             .contentType(MediaType.APPLICATION_JSON)
-            .pathParam("id", 1)
+            .pathParam("id", 51)
             .when()
             .put("/product/{id}")
             .then()
@@ -76,6 +67,7 @@ public class ProductResourceTest {
     }
 
     @Test
+    @Order(4)
     public void testCreateProduct() {
         var statusCode = given()
             .body(new Product("PlayStation 5", 30L, 499.99))
@@ -89,12 +81,16 @@ public class ProductResourceTest {
     }
 
     @Test
+    @Order(5)
     public void testDeleteProduct() {
-        given()
-            .pathParam("id", 1)
+        Awaitility.await().untilAsserted(() -> {
+            assertEquals(given()
+            .pathParam("id", 51)
             .delete("/product/{id}")
             .then()
-            .statusCode(204);
+            .extract()
+            .statusCode(), 204);
+        });
         var response = given()
             .when()
             .get("/products")
@@ -102,10 +98,11 @@ public class ProductResourceTest {
             .statusCode(200)
             .extract()
             .response();
-        assertFalse(response.jsonPath().getList("name").contains("Nintendo Switch 5"));
+        assertFalse(response.jsonPath().getList("name").contains("Xbox Series S"));
     }
     
     @Test
+    @Order(6)
     public void testGetRandomProduct() {
         var response = given()
             .when()
