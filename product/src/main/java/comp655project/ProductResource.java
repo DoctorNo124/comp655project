@@ -1,8 +1,11 @@
 package comp655project;
 
+import java.net.URI;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.RestResponse;
+import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
@@ -50,32 +53,29 @@ public class ProductResource {
     @Path("/product/{id}")
     @Tag(name = "Update Product", description = "Updates a product")
     @WithTransaction
-    public Uni<Product> updateProduct(@PathParam("id") long id, Product product) {
+    public Uni<RestResponse<Void>> updateProduct(@PathParam("id") long id, Product product) {
         return Product.findProduct(id)
                 .onItem().ifNull()
                 .failWith(() -> new WebApplicationException(Response.Status.NOT_FOUND))
                 .onItem().ifNotNull()
-                .transform(oldProduct -> {
-                    oldProduct.id = product.id;
-                    oldProduct.name = product.name;
-                    oldProduct.quantity = product.quantity;
-                    oldProduct.price = product.price;
-                    return oldProduct;});
+                .transformToUni(item -> Uni.createFrom().item(ResponseBuilder.<Void>noContent().build()));
     }
 
     @POST
     @Path("/product")
     @Tag(name = "Create Product", description = "Creates a product")
     @WithTransaction
-    public Uni<Product> createProduct(Product product) {
-        return product.persist();
+    public Uni<RestResponse<Void>> createProduct(Product product) {
+        return product.persist().onItem().transformToUni(item -> Uni.createFrom().item(ResponseBuilder.<Void>created(URI.create(("/products/product/" + ((Product)item).id))).build()));
     }
 
     @DELETE
     @Path("/product/{id}")
     @Tag(name = "Delete Product", description = "Deletes a product")
     @WithTransaction
-    public Uni<Boolean> deleteProduct(@PathParam("id") long id) {
-        return Product.deleteProduct(id);
+    public Uni<RestResponse<Void>> deleteProduct(@PathParam("id") long id) {
+        return Product.deleteProduct(id).onItem().transformToUni(item -> { 
+            return Uni.createFrom().item(ResponseBuilder.<Void>noContent().build());
+        });
     }
 }

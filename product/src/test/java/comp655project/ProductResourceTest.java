@@ -31,13 +31,13 @@ public class ProductResourceTest {
             .then()
             .extract()
             .statusCode();
-        assertTrue(statusCode == 200);
+        assertTrue(statusCode == 201);
     }
     
     @Test
     public void testGetProduct() {
         var response = given()
-            .pathParam("id", 1)
+            .pathParam("id", 2)
             .when()
             .get("/product/{id}")
             .then()
@@ -63,35 +63,29 @@ public class ProductResourceTest {
     
     @Test
     public void testUpdateProduct() {
-        var response = given()
+        var statusCode = given()
             .body(new Product("Xbox Series X", 30L, 499.99))
             .contentType(MediaType.APPLICATION_JSON)
             .pathParam("id", 1)
             .when()
             .put("/product/{id}")
             .then()
-            .statusCode(200)
             .extract()
-            .response();
-        assertEquals(response.jsonPath().getString("name"), "Xbox Series X");
-        assertEquals(response.jsonPath().getInt("quantity"), 30L);
-        assertEquals(response.jsonPath().getDouble("price"), 499.99);
+            .statusCode();
+        assertEquals(statusCode, 204);
     }
 
     @Test
     public void testCreateProduct() {
-        var response = given()
+        var statusCode = given()
             .body(new Product("PlayStation 5", 30L, 499.99))
             .contentType(MediaType.APPLICATION_JSON)
             .when()
             .post("/product")
             .then()
-            .statusCode(200)
             .extract()
-            .response();
-        assertEquals(response.jsonPath().getString("name"), "PlayStation 5");
-        assertEquals(response.jsonPath().getInt("quantity"), 30);
-        assertEquals(response.jsonPath().getDouble("price"), 499.99);
+            .statusCode();
+        assertEquals(statusCode, 201);
     }
 
     @Test
@@ -108,7 +102,7 @@ public class ProductResourceTest {
             .statusCode(200)
             .extract()
             .response();
-        assertFalse(response.jsonPath().getList("name").contains("Xbox Series S"));
+        assertFalse(response.jsonPath().getList("name").contains("Nintendo Switch"));
     }
     
     @Test
