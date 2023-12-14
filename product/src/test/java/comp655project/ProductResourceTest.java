@@ -43,9 +43,9 @@ public class ProductResourceTest {
             .then()
             .extract()
             .response();
-        assertTrue(response.jsonPath().getList("name").contains("Xbox Series S"));
-        assertTrue(response.jsonPath().getList("quantity").contains(100));
-        assertTrue(response.jsonPath().getList("price").contains(399.99));
+        assertEquals(response.jsonPath().getString("name"), "Xbox Series S");
+        assertEquals(response.jsonPath().getInt("quantity"), 100L);
+        assertEquals(response.jsonPath().getDouble("price"), 399.99);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ProductResourceTest {
             .extract()
             .response();
         assertEquals(response.jsonPath().getString("name"), "Xbox Series X");
-        assertEquals(response.jsonPath().getInt("quantity"), 30);
+        assertEquals(response.jsonPath().getInt("quantity"), 30L);
         assertEquals(response.jsonPath().getDouble("price"), 499.99);
     }
 
@@ -98,11 +98,9 @@ public class ProductResourceTest {
     public void testDeleteProduct() {
         given()
             .pathParam("id", 1)
-            .when()
             .delete("/product/{id}")
             .then()
-            .extract()
-            .response();
+            .statusCode(204);
         var response = given()
             .when()
             .get("/products")
